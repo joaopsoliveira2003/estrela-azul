@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+<header class="h-100 bg-primary py-4">
+    <div class="container text-center">
+        <img src="{{club.image.url}}" width="150" height="150">
+        <h1 class="pt-1">Bem-vindo ao {{club.name}}!</h1>
+        {% autoescape off %}
+            {{club.description}}
+        {% endautoescape %} 
+
+    </div>
+</header>
+{% if user.is_authenticated %}
+    <div class="container py-3 mt-4 bg-secondary text-center rounded">
+        <h5>
+            Bem-vindo de volta, {{user.get_username|capfirst}}!<br>
+            Já se encontra com a sessão iniciada, pretende aceder ao painel?<br>
+            <a class="mt-2 btn btn-primary" href="{% url 'dashboard' %}">Visitar Painel</a>
+        </h5>
+    </div>
+{% endif %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mb-5">
+            <h3>Sobre Nós</h3>
+            <hr>
+            <p>
+                {% autoescape off %}
+                    {{club.about}}
+                {% endautoescape %}
+            </p>
+        </div>
+        <div class="col-lg-4 mb-5">
+            <h3>Visite-nos</h3>
+            <hr>
+            <p>
+                {% autoescape off %}
+                    {{club.contact}}
+                {% endautoescape %}
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

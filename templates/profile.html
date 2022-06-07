@@ -1,0 +1,79 @@
+{% extends 'layout-dashboard.html' %}
+{% load static %}
+{% load poll_extras %}
+{% block 'conteudo' %}
+    <div class="accordion text-white py-3" id="accordionExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button d-inline-block text-white bg-dark collapsed border-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                    Informações sobre si
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show border-white" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body p-0 pb-3 d-flex justify-content-center">
+                    <form method="POST" class="pt-3 w-50">
+                        {% csrf_token %}
+                        <input type="text" name="action" value="edit" hidden>
+                        <div class="mb-3">
+                            <label for="first_name" class="form-label">Nome:</label>
+                            <input value="{{user.first_name|default:"Sem Nome"}}" name="first_name" type="text" class="form-control" id="first_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="last_name" class="form-label">Apelido:</label>
+                            <input value="{{user.last_name|default:"Sem Apelido"}}" name="last_name" type="text" class="form-control" id="last_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input value="{{user.email|default:"Sem Email"}}" name="email" type="email" class="form-control" id="email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio:</label>
+                            <input value="{{user.profile.bio|default:"Sem Bio"}}" name="bio" type="text" class="form-control" id="bio">
+                        </div>
+                        <div class="mb-3">
+                            <label for="born" class="form-label">Data de Nascimento:</label>
+                            <input value="{{user.profile.born|date:"Y-m-d"}}" name="born" type="date" class="form-control" id="born">
+                        </div>
+                        <div class="d-flex justify-content-center">
+                          <button type="submit" class="btn btn-info">Editar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button d-inline-block text-white bg-dark collapsed border-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Gerir Utilizador
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse border-white" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body d-flex justify-content-center">
+                    <div>
+                        <a class="btn btn-primary" href="{% url 'password_change' %}">Modificar palavra-passe</a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Eliminar Conta</button>
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-dark text-white">
+                                        <h5 class="modal-title">Deseja apagar a sua conta?</h5>
+                                    </div>
+                                    <div class="modal-body bg-dark">
+                                        <form method="POST">
+                                            <div class="form-row d-flex justify-content-center">
+                                                {% csrf_token %}
+                                                <input type="text" name="action" value="delete" hidden>
+                                                <button type="submit" class="btn btn-danger">Sim</button>&nbsp;&nbsp;&nbsp;
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

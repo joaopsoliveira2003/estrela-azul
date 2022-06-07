@@ -1,0 +1,244 @@
+{% extends 'layout-dashboard.html' %}
+{% load static %}
+{% load poll_extras %}
+{% block 'conteudo' %}
+<div class="accordion text-white py-3" id="accordionExample">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button d-inline-block text-white bg-dark collapsed border-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                Listagem de Jogos
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse {% if request.GET.search == null  %}show{% endif %} border-white" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body text-center text-white p-0 pb-3">
+                {% if count != 0 %}
+                    <div class="overflow-auto">
+                        <table class="table table-striped table-bordered table-responsive table-hover text-white">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Inicio</th>
+                                    <th scope="col">Fim</th>
+                                    <th scope="col">Equipa</th>
+                                    <th scope="col">Adversário</th>
+                                    <th scope="col">Golos da equipa</th>
+                                    <th scope="col">Golos da equipa adversária</th>
+                                    <th scope="col">Gerir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in games %}
+                                    <tr class="text-white">
+                                        <td>{{record.name}}</td>
+                                        <td>{{record.start}}</td>
+                                        <td>{{record.end}}</td>
+                                        <td>{{record.team}}</td>
+                                        <td>{{record.enemy}}</td>
+                                        <td>{{record.teamgoals}}</td>
+                                        <td>{{record.enemygoals}}</td>
+                                        <td class="align-middle text-center"><a class="link-info" href="#" data-bs-toggle="modal" data-bs-target="#modal{{record.id}}"><i class="fas fa-cog"></i></a></td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% for record in games %}
+                    <div class="modal fade" id="modal{{record.id}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content bg-dark text-white">
+                                <form method="POST" class="p-3">
+                                    {% csrf_token %}
+                                    <input type="text" name="id" value="{{record.id}}" hidden>
+                                    <input type="text" name="action" id="action{{record.id}}" hidden>
+                                    <div class="modal-header justify-content-center">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Gerir Jogo: {{record.name}}</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Nome do Jogo:</label>
+                                            <input value="{{record.name}}" name="name" type="text" class="form-control" id="name">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Inicio:</label>
+                                            <input value="{{record.start|date:"Y-m-d"}}T{{record.start|time:"H:i"}}" name="start" type="datetime-local" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Fim:</label>
+                                            <input value="{{record.end|date:"Y-m-d"}}T{{record.end|time:"H:i"}}" name="end" type="datetime-local" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Selecione uma equipa:</label>
+                                            <select name="team" class="form-select" aria-label="Selecione uma equipa">
+                                                {% for t in teams %}
+                                                    <option value="{{t.id}}" {% if t.id == record.team_id %}selected{% endif %}>{{t.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="enemy" class="form-label">Inimigo:</label>
+                                            <input value="{{record.enemy}}" name="enemy" type="text" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="teamgoals" class="form-label">Golos da equipa:</label>
+                                            <input value="{{record.teamgoals}}" name="teamgoals" type="number" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="enemygoals" class="form-label">Golos da equipa adversária:</label>
+                                            <input value="{{record.enemygoals}}" name="enemygoals" type="number" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-center">
+                                        {% if user|has_group:"Administrador" or user|has_group:"Treinador" %}
+                                            <button type="submit" class="btn btn-info" onclick="document.getElementById('action{{record.id}}').value = 'edit'">Editar</button>
+                                            <button type="submit" class="btn btn-danger" onclick="document.getElementById('action{{record.id}}').value = 'delete'">Eliminar</button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div>
+                        {% if games.has_previous %}
+                            <a href="?page=1"><i class="fas fa-step-backward text-info"></i></a>
+                            <a href="?page={{games.previous_page_number}}"><i class="fas fa-arrow-left text-info"></i></a>
+                        {% else %}
+                            <a class="disabled"><i class="fas fa-step-backward text-muted"></i></a>
+                            <a class="disabled"><i class="fas fa-arrow-left text-muted"></i></a>
+                        {% endif %}
+                        <span class="current">Página {{games.number}} de {{games.paginator.num_pages}}</span>
+                        {% if games.has_next %}
+                            <a href="?page={{games.next_page_number}}"><i class="fas fa-arrow-right text-info"></i></a>
+                            <a href="?page={{games.paginator.num_pages}}"><i class="fas fa-step-forward text-info"></i></a>
+                        {% else %}
+                            <a class="disabled"><i class="fas fa-arrow-right text-muted"></i></a>
+                            <a class="disabled"><i class="fas fa-step-forward text-muted"></i></a>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="text-center">
+                        <h6 class="pt-4 pb-1">Sem Jogos!</h6>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button d-inline-block text-white bg-dark collapsed border-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Pesquisa de Jogos
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse border-white {% if request.GET.search != null  %}show{% endif %}" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div class="accordion-body p-0 text-center">
+                <form class="pt-4 pb-3">
+                    <label for="search" class="form-label">Nome:</label>
+                    <input required class="rounded" type="text" name="search">
+                </form>
+                {% if search.quant != 0 and search != null %}
+                    <div class="overflow-auto">
+                        <table class="my-0 table table-striped table-bordered table-responsive table-hover text-white">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Inicio</th>
+                                    <th scope="col">Fim</th>
+                                    <th scope="col">Equipa</th>
+                                    <th scope="col">Adversário</th>
+                                    <th scope="col">Golos da equipa</th>
+                                    <th scope="col">Golos da equipa adversária</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in search %}
+                                    <tr class="text-white">
+                                        <td>{{record.name}}</td>
+                                        <td>{{record.start}}</td>
+                                        <td>{{record.end}}</td>
+                                        <td>{{record.team}}</td>
+                                        <td>{{record.enemy}}</td>
+                                        <td>{{record.teamgoals}}</td>
+                                        <td>{{record.enemygoals}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    {% if search.quant == 0 %}
+                        <div class="text-center">
+                            <h6 class="pb-3">Não existem registos com o nome especificado!</h6>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if user|has_group:"Administrador" or user|has_group:"Treinador" %}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button d-inline-block text-white bg-dark collapsed border-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    Gerir Jogos
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse border-white" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                <div class="accordion-body d-flex justify-content-center">
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Inserir Jogo</button>
+                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content bg-dark text-white">
+                                <form method="POST" action="{% url 'game' %}" class="p-3">
+                                    {% csrf_token %}
+                                    <div class="modal-header justify-content-center">
+                                        <h5 class="modal-title" id="staticBackdropLabel">Inserir Jogo</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Nome do Jogo:</label>
+                                            <input required name="name" type="text" class="form-control" id="name">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Inicio:</label>
+                                            <input required name="start" type="datetime-local" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Fim:</label>
+                                            <input required name="end" type="datetime-local" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Selecione uma equipa:</label>
+                                            <select required name="team" class="form-select" aria-label="Selecione uma equipa">
+                                                <option selected disabled>Equipas</option>
+                                                {% for t in teams %}
+                                                    <option value="{{t.id}}">{{t.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="enemy" class="form-label">Inimigo:</label>
+                                            <input required name="enemy" type="text" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="teamgoals" class="form-label">Golos da equipa:</label>
+                                            <input required name="teamgoals" type="number" class="form-control">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="enemygoals" class="form-label">Golos da equipa adversária:</label>
+                                            <input required name="enemygoals" type="number" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-center">
+                                        <button type="submit" class="btn btn-info">Inserir</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

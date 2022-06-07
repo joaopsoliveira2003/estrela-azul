@@ -1,0 +1,99 @@
+{% extends 'layout-dashboard.html' %}
+{% load static %}
+{% load poll_extras %}
+{% block 'conteudo' %}
+<div class="row text-center pt-3">
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 d-flex justify-content-center">
+        <div class="card bg-dark text-white mb-3 w-100 border-white">
+            <div class="card-header border-white">Jogos</div>
+            <div class="card-body">
+                <h1>{{games_count}}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 d-flex justify-content-center">
+        <div class="card bg-dark text-white mb-3 w-100 border-white">
+            <div class="card-header border-white">Treinos</div>
+            <div class="card-body">
+                <h1>{{trainings_count}}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 d-flex justify-content-center">
+        <div class="card bg-dark text-white mb-3 w-100 border-white">
+            <div class="card-header border-white">Jogadores</div>
+            <div class="card-body">
+                <h1>{{players_count}}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3 d-flex justify-content-center">
+        <div class="card bg-dark text-white mb-3 w-100 border-white">
+            <div class="card-header border-white">Treinadores</div>
+            <div class="card-body">
+                <h1>{{coachs_count}}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+{% if trainings_count != 0 %}
+    <h4 class="text-white text-center">Ultimos Treinos introduzidos</h4>
+    <div class="overflow-auto text-white text-center">
+        <table class="table table-striped table-bordered table-responsive table-hover text-white mt-3">
+            <thead>
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Inicio</th>
+                    <th scope="col">Fim</th>
+                    <th scope="col">Equipa</th>
+                    <th scope="col">Escalao</th>
+                    <th scope="col">Treinador</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in trainings|slice:"5" %}
+                    <tr class="text-white">
+                        <td>{{record.name}}</td>
+                        <td>{{record.start}}</td>
+                        <td>{{record.end}}</td>
+                        <td>{{record.team}}</td>
+                        <td>{{record.team.echelon}}</td>
+                        <td>{{record.team.trainer}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% if games_count != 0 %}
+    <h4 class="text-white text-center">Ultimos Jogos introduzidos</h4>
+    <div class="overflow-auto text-center">
+        <table class="table table-striped table-bordered table-responsive table-hover text-white mt-3">
+            <thead>
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Inicio</th>
+                    <th scope="col">Fim</th>
+                    <th scope="col">Equipa</th>
+                    <th scope="col">Adversário</th>
+                    <th scope="col">Golos da equipa</th>
+                    <th scope="col">Golos da equipa adversária</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in games|slice:"5" %}
+                    <tr class="text-white">
+                        <td>{{record.name}}</td>
+                        <td>{{record.start}}</td>
+                        <td>{{record.end}}</td>
+                        <td>{{record.team}}</td>
+                        <td>{{record.enemy}}</td>
+                        <td>{{record.teamgoals}}</td>
+                        <td>{{record.enemygoals}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock %}

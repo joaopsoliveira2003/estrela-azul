@@ -1,0 +1,70 @@
+{% load static %}
+<!doctype html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>Registo - {{club.name}}</title>
+        <link rel="icon" href="{{club.image.url}}">
+        <link href="{% static '/css/bootstrap.css' %}" rel="stylesheet">
+        <link href="{% static '/fontawesome/css/all.css' %}" rel="stylesheet">
+        <style>
+            @media screen and (min-width: 991px) {
+                #registration {
+                    max-width: 30vw
+                }
+            }
+        </style>
+    </head>
+    <body class="bg-dark text-white min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="container text-center mb-5 pb-5" id="registration">
+            <img class="img-fluid img-responsive" style="width: 125px; height: 125px" src="{{club.image.url}}" alt="">
+            <h4 class="pt-3">{{club.name}}</h4>
+            <h5 class="pt-2">Registo</h5>
+            <div class="card bg-dark border-0">
+                <form class="pt-3" method="post">
+                    {% csrf_token %}
+                    <div class="form-group input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><a><i class="fas fa-user"></i></a></span>
+                        </div>
+                        <input required autofocus class="form-control" type="text" name="username" value="{{form.username.value|default:''}}" class="form-control" aria-describedby="username" placeholder="Utilizador">
+                    </div>
+                    <div class="form-group input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><a><i class="fas fa-key"></i></a></span>
+                        </div>
+                        <input required class="form-control" type="password" name="password1" class="form-control" placeholder="Palavra-Passe">
+                    </div>
+                    <div class="form-group input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><a><i class="fas fa-check"></i></a></span>
+                        </div>
+                        <input required class="form-control" type="password" name="password2" class="form-control" placeholder="Confirmar palavra-passe">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registar</button>
+                </form>
+                {% if form.errors %}
+                    <div class="mt-3 toast bg-dark border-white w-100" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <strong class="me-auto">Erro!</strong>
+                            <small class="text-muted pl-1" id="toast_timer">agora</small>
+                        </div>
+                        <div class="toast-body">
+                            {% for error in form.errors %}
+                                {% if error == 'username' %}
+                                    <a>O utilizador já existe!</a><br>
+                                {% elif error == 'password2' %}
+                                    <a>As palavra-passes introduzidas não são válidas!</a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                <p class="pt-3">Tem conta? Clique <a href="{% url 'login' %}">aqui</a> para iniciar sessão!</p>
+            </div>
+        </div>
+        <script src="{% static '/js/bootstrap.bundle.js' %}"></script>
+        <script src="{% static '/js/scripts.js' %}"></script>
+    </body>
+</html>

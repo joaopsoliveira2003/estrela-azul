@@ -1,0 +1,103 @@
+{% extends 'layout-dashboard.html' %}
+{% load static %}
+{% load poll_extras %}
+{% block 'conteudo' %}
+{% if user|has_group:"Administrador" %}
+<div class="accordion text-white py-3" id="accordionExample">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button text-white bg-dark collapsed border-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                Informacões sobre o clube
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show border-white" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body p-0 pb-3 d-flex justify-content-center">
+                <form enctype="multipart/form-data" method="POST" class="pt-3 w-50">
+                    {% csrf_token %}
+                    <input hidden name="action" value="club">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nome:</label>
+                        <input required value="{{club.name}}" name="name" class="form-control" type="text">
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Imagem:</label>
+                        Clique <a href="{{club.image.url}}">aqui</a> para ver a imagem atual!
+                        <input name="image" class="form-control" type="file">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Descricão:</label>
+                        <input required value="{{club.description}}" name="description" class="form-control" type="text">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Sobre:</label>
+                        <textarea rows="5" class="form-control" name="about">{{club.about}}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Contacto:</label>
+                        <textarea rows="5" class="form-control" name="contact">{{club.contact}}</textarea>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                      <button type="submit" class="btn btn-info">Editar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button text-white bg-dark collapsed border-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Permissões por utilizador
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse border-white" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div class="accordion-body p-0 pb-3 d-flex justify-content-center">
+                <form method="POST" class="pt-3 w-25">
+                    {% csrf_token %}
+                    <input hidden name="action" value="group">
+                    <div class="mb-2">
+                        <label for="user" class="form-label">Utilizador:</label>
+                        <select name="user" class="form-select">
+                            {% for record in User %}
+                                <option value="{{record.id}}">{{record.username}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="group" class="form-label">Grupo:</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="group" value="Utilizador">
+                        <label class="form-check-label" for="utilizador">
+                          Utilizador
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="group" value="Jogador">
+                        <label class="form-check-label" for="jogador">
+                          Jogador
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="group" value="Treinador">
+                        <label class="form-check-label" for="treinador">
+                          Treinador
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="radio" name="group" value="Administrador">
+                        <label class="form-check-label" for="administrador">
+                          Administrador
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-info">Editar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+    <div class="text-center text-white pt-5">
+        <h4>Não tem permissão para aceder a esta página!</h4>
+    </div>
+{% endif %}
+{% endblock %}

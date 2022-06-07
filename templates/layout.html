@@ -1,0 +1,53 @@
+{% load static %}
+<!doctype html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>{{title}} - {{club.name}}</title>
+        <link rel="icon" href="{{club.image.url}}">
+        <link href="{% static '/css/bootstrap.css' %}" rel="stylesheet">
+        <link href="{% static '/fontawesome/css/all.css' %}" rel="stylesheet">
+    </head>
+    <body class="bg-dark text-white">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'index' %}"><img class="me-1" style="margin-top: -5px" alt="logo" src="{{club.image.url}}" height="25" width="25">{{club.name}}</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto">
+
+                    </ul>
+                    <ul class="navbar-nav text-center">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user"></i> {{user.get_username|capfirst}}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark text-center text-lg-start" aria-labelledby="navbarDarkDropdownMenuLink">
+                                    <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="fas fa-toolbox"></i> Painel</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-id-card"></i> Perfil</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Terminar Sessão</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="fas fa-user"></i> Iniciar Sessão</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        {% block content %}
+        {% endblock %}
+        <footer class="border-top pt-3 fixed-bottom bg-dark">
+            <div class="container text-center">
+                <p>&copy; {{club.name}} &bigstar; {{year}} &trade;</p>
+            </div>
+        </footer>
+        <script src="{% static '/js/bootstrap.bundle.js' %}"></script>
+    </body>
+</html>
