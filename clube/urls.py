@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView#, RedirectView
+from django.views.generic import TemplateView
 from django.conf.urls.static import static
 from django.conf import settings
 from website.views import *
